@@ -40,5 +40,5 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     
-    implementation("dev.rikka.shizuku:api:13.1.5")
+    implementation("dev.rikka.shizuku:api:12.1.0")
 }
