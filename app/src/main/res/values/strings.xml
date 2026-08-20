@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">App Freezer</string>
+    <string name="tile_label">تجميد التطبيقات</string>
+</resources>

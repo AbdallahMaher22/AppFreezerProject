@@ -1,6 +1,7 @@
 package com.abdallahmaher.appfreezer
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
@@ -17,11 +18,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import rikka.shizuku.Shizuku
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = AppPreferences(this)
-        ShizukuUtils.requestPermission()
+        
+        try {
+            if (!Shizuku.pingBinder()) {
+                Toast.makeText(this, "تطبيق Shizuku لا يعمل! يرجى تفعيله أولاً.", Toast.LENGTH_LONG).show()
+            } else {
+                ShizukuUtils.requestPermission()
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+
         setContent {
             MaterialTheme(colorScheme = darkColorScheme()) {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -31,16 +44,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSelectionScreen(pm: PackageManager, prefs: AppPreferences) {
-    val apps = remember { pm.getInstalledApplications(PackageManager.GET_META_DATA) }
+    val apps = remember { 
+        try {
+            pm.getInstalledApplications(PackageManager.GET_META_DATA) 
+        } catch(e: Exception) {
+            emptyList()
+        }
+    }
     var selectedApps by remember { mutableStateOf(prefs.getSelectedApps()) }
     var searchQuery by remember { mutableStateOf("") }
     val filteredApps = apps.filter {
         val appName = pm.getApplicationLabel(it).toString()
         appName.contains(searchQuery, ignoreCase = true) || selectedApps.contains(it.packageName)
     }.sortedBy { pm.getApplicationLabel(it).toString() }
+
     Scaffold(
         topBar = {
             TopAppBar(
