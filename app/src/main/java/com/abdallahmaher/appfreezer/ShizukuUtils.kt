@@ -11,7 +11,7 @@ object ShizukuUtils {
                 false
             }
         } catch (e: Throwable) {
-            false // هذا السطر هو مفتاح الحل، يجب أن يكون false لطلب الصلاحية الحقيقية بدلاً من التظاهر بوجودها
+            false
         }
     }
 
@@ -26,15 +26,17 @@ object ShizukuUtils {
     }
 
     fun toggleApp(packageName: String, disable: Boolean): Boolean {
-        val command = if (disable) {
-            "pm disable-user --user 0 $packageName"
+        val cmd = if (disable) {
+            arrayOf("pm", "disable-user", "--user", "0", packageName)
         } else {
-            "pm enable $packageName"
+            arrayOf("pm", "enable", packageName)
         }
+        
         return try {
             if (!Shizuku.pingBinder()) return false
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
-            process.waitFor() == 0
+            val process = Shizuku.newProcess(cmd, null, null)
+            val exitCode = process.waitFor()
+            exitCode == 0
         } catch (e: Throwable) {
             e.printStackTrace()
             false

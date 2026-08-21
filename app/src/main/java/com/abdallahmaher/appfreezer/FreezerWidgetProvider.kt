@@ -28,23 +28,27 @@ class FreezerWidgetProvider : AppWidgetProvider() {
             val selectedApps = prefs.getSelectedApps()
 
             if (selectedApps.isEmpty()) {
-                Toast.makeText(context, "لم تقم بتحديد تطبيقات لتجميدها!", Toast.LENGTH_SHORT).show()
-            } else if (!ShizukuUtils.hasPermission()) {
-                Toast.makeText(context, "الرجاء فتح التطبيق وإعطاء صلاحية Shizuku!", Toast.LENGTH_LONG).show()
-            } else {
-                isFrozen = !isFrozen
-                var successCount = 0
-                selectedApps.forEach { pkg ->
-                    if(ShizukuUtils.toggleApp(pkg, isFrozen)) successCount++
-                }
-                if(isFrozen) {
-                     Toast.makeText(context, "تم تجميد $successCount تطبيق بنجاح", Toast.LENGTH_SHORT).show()
-                } else {
-                     Toast.makeText(context, "تم تفعيل $successCount تطبيق بنجاح", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(context, "لم تحدد تطبيقات!", Toast.LENGTH_SHORT).show()
+                return
+            }
+            
+            if (!ShizukuUtils.hasPermission()) {
+                Toast.makeText(context, "لا يوجد صلاحية Shizuku!", Toast.LENGTH_LONG).show()
+                return
             }
 
-            // تحديث شكل الويدجت بناءً على الحالة الجديدة
+            isFrozen = !isFrozen
+            var successCount = 0
+            selectedApps.forEach { pkg ->
+                if (ShizukuUtils.toggleApp(pkg, isFrozen)) successCount++
+            }
+            
+            if (isFrozen) {
+                Toast.makeText(context, "تم تجميد $successCount تطبيق", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "تم تفعيل $successCount تطبيق", Toast.LENGTH_SHORT).show()
+            }
+
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val thisWidget = ComponentName(context, FreezerWidgetProvider::class.java)
             appWidgetManager.getAppWidgetIds(thisWidget).forEach { id ->
@@ -57,10 +61,10 @@ class FreezerWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
         if (isFrozen) {
-            views.setInt(R.id.widgetIconBg, "setBackgroundResource", R.drawable.widget_circle_active)
-            views.setTextViewText(R.id.widgetText, "معطلة")
+            views.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.widget_circle_active)
+            views.setTextViewText(R.id.widgetText, "معطل")
         } else {
-            views.setInt(R.id.widgetIconBg, "setBackgroundResource", R.drawable.widget_circle_normal)
+            views.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.widget_circle_normal)
             views.setTextViewText(R.id.widgetText, "تجميد")
         }
 
