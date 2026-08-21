@@ -5,16 +5,19 @@ import rikka.shizuku.Shizuku
 object ShizukuUtils {
     fun hasPermission(): Boolean {
         return try {
-            if (Shizuku.isPreV11() || Shizuku.getVersion() < 11) return false
-            Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+            if (Shizuku.pingBinder()) {
+                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+            } else {
+                false
+            }
         } catch (e: Throwable) {
-            true // السماح بالتنفيذ لتجنب التعطيل الخاطئ
+            false // هذا السطر هو مفتاح الحل، يجب أن يكون false لطلب الصلاحية الحقيقية بدلاً من التظاهر بوجودها
         }
     }
 
     fun requestPermission() {
         try {
-            if (!hasPermission()) {
+            if (Shizuku.pingBinder() && !hasPermission()) {
                 Shizuku.requestPermission(0)
             }
         } catch (e: Throwable) {
@@ -29,6 +32,7 @@ object ShizukuUtils {
             "pm enable $packageName"
         }
         return try {
+            if (!Shizuku.pingBinder()) return false
             val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             process.waitFor() == 0
         } catch (e: Throwable) {

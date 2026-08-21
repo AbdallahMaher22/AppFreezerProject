@@ -3,23 +3,30 @@
     android:id="@+id/widgetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_bg_normal"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="4dp">
-    
-    <ImageView
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:src="@drawable/ic_launcher"
-        android:contentDescription="Icon"/>
-        
+
+    <FrameLayout
+        android:id="@+id/widgetIconBg"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:background="@drawable/widget_circle_normal">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_freeze" />
+    </FrameLayout>
+
     <TextView
         android:id="@+id/widgetText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:text="تجميد"
         android:textColor="#FFFFFF"
-        android:textSize="9sp"
+        android:textSize="12sp"
         android:textStyle="bold" />
 </LinearLayout>

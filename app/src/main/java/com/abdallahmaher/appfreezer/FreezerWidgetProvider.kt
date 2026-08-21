@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
+import android.widget.Toast
 
 class FreezerWidgetProvider : AppWidgetProvider() {
     companion object {
@@ -25,12 +26,25 @@ class FreezerWidgetProvider : AppWidgetProvider() {
         if (intent.action == ACTION_TOGGLE) {
             val prefs = AppPreferences(context)
             val selectedApps = prefs.getSelectedApps()
-            if (selectedApps.isNotEmpty() && ShizukuUtils.hasPermission()) {
+
+            if (selectedApps.isEmpty()) {
+                Toast.makeText(context, "لم تقم بتحديد تطبيقات لتجميدها!", Toast.LENGTH_SHORT).show()
+            } else if (!ShizukuUtils.hasPermission()) {
+                Toast.makeText(context, "الرجاء فتح التطبيق وإعطاء صلاحية Shizuku!", Toast.LENGTH_LONG).show()
+            } else {
                 isFrozen = !isFrozen
+                var successCount = 0
                 selectedApps.forEach { pkg ->
-                    ShizukuUtils.toggleApp(pkg, isFrozen)
+                    if(ShizukuUtils.toggleApp(pkg, isFrozen)) successCount++
+                }
+                if(isFrozen) {
+                     Toast.makeText(context, "تم تجميد $successCount تطبيق بنجاح", Toast.LENGTH_SHORT).show()
+                } else {
+                     Toast.makeText(context, "تم تفعيل $successCount تطبيق بنجاح", Toast.LENGTH_SHORT).show()
                 }
             }
+
+            // تحديث شكل الويدجت بناءً على الحالة الجديدة
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val thisWidget = ComponentName(context, FreezerWidgetProvider::class.java)
             appWidgetManager.getAppWidgetIds(thisWidget).forEach { id ->
@@ -41,12 +55,12 @@ class FreezerWidgetProvider : AppWidgetProvider() {
 
     private fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
         val views = RemoteViews(context.packageName, R.layout.widget_layout)
-        
+
         if (isFrozen) {
-            views.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.widget_bg_active)
+            views.setInt(R.id.widgetIconBg, "setBackgroundResource", R.drawable.widget_circle_active)
             views.setTextViewText(R.id.widgetText, "معطلة")
         } else {
-            views.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.widget_bg_normal)
+            views.setInt(R.id.widgetIconBg, "setBackgroundResource", R.drawable.widget_circle_normal)
             views.setTextViewText(R.id.widgetText, "تجميد")
         }
 
