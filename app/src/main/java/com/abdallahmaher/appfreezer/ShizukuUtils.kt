@@ -1,15 +1,13 @@
 package com.abdallahmaher.appfreezer
 import android.content.pm.PackageManager
 import rikka.shizuku.Shizuku
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 object ShizukuUtils {
     fun hasPermission(): Boolean {
         return try {
-            if (Shizuku.pingBinder()) {
-                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-            } else {
-                false
-            }
+            Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
         } catch (e: Throwable) {
             false
         }
@@ -17,29 +15,28 @@ object ShizukuUtils {
 
     fun requestPermission() {
         try {
-            if (Shizuku.pingBinder() && !hasPermission()) {
-                Shizuku.requestPermission(0)
-            }
-        } catch (e: Throwable) {
-            e.printStackTrace()
-        }
+            if (Shizuku.pingBinder() && !hasPermission()) Shizuku.requestPermission(0)
+        } catch (e: Throwable) { }
     }
 
-    fun toggleApp(packageName: String, disable: Boolean): Boolean {
-        val cmd = if (disable) {
-            arrayOf("pm", "disable-user", "--user", "0", packageName)
-        } else {
-            arrayOf("pm", "enable", packageName)
-        }
+    // هنا السحر: كود يرسل الأمر ويقرأ سبب الرفض لو حدث!
+    fun togglePlayStore(disable: Boolean): String {
+        val pkg = "com.android.vending"
+        val cmd = if (disable) "pm disable-user --user 0 $pkg" else "pm enable $pkg"
         
         return try {
-            if (!Shizuku.pingBinder()) return false
-            val process = Shizuku.newProcess(cmd, null, null)
-            val exitCode = process.waitFor()
-            exitCode == 0
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+            val reader = BufferedReader(InputStreamReader(process.errorStream))
+            val errorOutput = reader.readText()
+            process.waitFor()
+            
+            if (errorOutput.isNotEmpty()) {
+                errorOutput // إرجاع رسالة الخطأ لنقرأها
+            } else {
+                "SUCCESS"
+            }
         } catch (e: Throwable) {
-            e.printStackTrace()
-            false
+            e.message ?: "Unknown Error"
         }
     }
 }

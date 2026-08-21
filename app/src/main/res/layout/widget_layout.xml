@@ -3,25 +3,18 @@
     android:id="@+id/widgetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_circle_normal"
+    android:background="@drawable/widget_bg_normal"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="2dp">
-
-    <TextView
-        android:id="@+id/widgetIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="❄️"
-        android:textSize="20sp" />
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/widgetText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text="تجميد"
+        android:text="متجر Play"
         android:textColor="#FFFFFF"
-        android:textSize="10sp"
-        android:textStyle="bold" />
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="center" />
 </LinearLayout>
