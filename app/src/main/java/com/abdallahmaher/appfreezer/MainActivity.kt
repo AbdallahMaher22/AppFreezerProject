@@ -1,7 +1,6 @@
 package com.abdallahmaher.appfreezer
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import rikka.shizuku.Shizuku
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,11 +24,7 @@ class MainActivity : ComponentActivity() {
         val prefs = AppPreferences(this)
         
         try {
-            if (!Shizuku.pingBinder()) {
-                Toast.makeText(this, "تطبيق Shizuku لا يعمل! يرجى تفعيله أولاً.", Toast.LENGTH_LONG).show()
-            } else {
-                ShizukuUtils.requestPermission()
-            }
+            ShizukuUtils.requestPermission()
         } catch (e: Throwable) {
             e.printStackTrace()
         }

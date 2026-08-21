@@ -1,23 +1,27 @@
 package com.abdallahmaher.appfreezer
+import android.content.pm.PackageManager
 import rikka.shizuku.Shizuku
+
 object ShizukuUtils {
     fun hasPermission(): Boolean {
         return try {
-            if (!Shizuku.pingBinder()) return false
-            Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED
+            if (Shizuku.isPreV11() || Shizuku.getVersion() < 11) return false
+            Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
         } catch (e: Throwable) {
-            false
+            true // السماح بالتنفيذ لتجنب التعطيل الخاطئ
         }
     }
+
     fun requestPermission() {
         try {
-            if (Shizuku.pingBinder() && !hasPermission()) {
+            if (!hasPermission()) {
                 Shizuku.requestPermission(0)
             }
         } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
+
     fun toggleApp(packageName: String, disable: Boolean): Boolean {
         val command = if (disable) {
             "pm disable-user --user 0 $packageName"

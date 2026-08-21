@@ -6,11 +6,11 @@
     android:background="@drawable/widget_bg_normal"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="4dp">
     
     <ImageView
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
         android:src="@drawable/ic_launcher"
         android:contentDescription="Icon"/>
         
@@ -20,6 +20,6 @@
         android:layout_height="wrap_content"
         android:text="تجميد"
         android:textColor="#FFFFFF"
-        android:textSize="11sp"
+        android:textSize="9sp"
         android:textStyle="bold" />
 </LinearLayout>
